@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/anedaaee/khepri/issues"
   },
-  "homepage": "https://github.com/anedaaee/khepri#readme"
+  "homepage": "https://github.com/anedaaee/khepri#readme",
+  "dependencies": {
+    "nodemon": "^2.0.22"
+  }
 }
