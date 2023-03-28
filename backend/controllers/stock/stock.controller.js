@@ -3,8 +3,8 @@ const readCSV = require('./stockInformation/readCSV');
 class StockController  {
     
     getStockDataWithDateRange(req,res,next){
-        let queryText = `select * from ${req.body.stockName} where date >= \
-                                       '${String(req.body.startDate)}' and date <= \
+        let queryText = `SELECT * FROM ${req.body.stockName} WHERE date >= \
+                                       '${String(req.body.startDate)}' AND date <= \
                                        '${String(req.body.finishDate)}';`;   
         query(queryText)
         .then((result) => {
