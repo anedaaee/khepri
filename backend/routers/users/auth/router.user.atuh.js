@@ -3,8 +3,9 @@ const router = new express.Router();
 //const Users = require('../../../controllers/users/authentication/users,.authenticatio.controller');
 //const users = new Users();
 
-const query = require('../../../model/database');
-
+//const query = require('../../../model/database');
+const UserController = require('../../../controllers/users/auth/user.auth.controller');
+const userController = new UserController();
 // router.get('/', users.list);
 // router.post('/add', users.save);
 // router.get('/update/:id', users.edit);
@@ -14,7 +15,7 @@ const query = require('../../../model/database');
 // router.post('/login', users.postlogin);
 // router.get('/login', users.getlogin);
 
-router.post('/signup');
+router.post('/signup',userController.signup);
 router.post('/login');
 router.post('/update');
 router.post('/delete');
