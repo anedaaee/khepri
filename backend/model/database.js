@@ -23,13 +23,13 @@ let  query = (query) => {
             };
             //resolve (returnObj);
             {
-            console.log(query);
+            //console.log(query);
             //console.log(connection);
             connection.query(query,(error,result,fields) => {
                 if(error){
                     let returnObj = {
                         metadata:{
-                            situation:true,
+                            situation:false,
                             message:`Database performed query. error: ${error}`
                         },
                         data : {}
