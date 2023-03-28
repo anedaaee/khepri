@@ -33,9 +33,11 @@
     "jsonwebtoken": "^9.0.0",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.22",
+    "os": "^0.1.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "path": "^0.12.7",
+    "process": "^0.11.10",
     "uuid": "^9.0.0"
   }
 }
