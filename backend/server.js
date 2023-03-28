@@ -6,6 +6,7 @@ const passport = require('passport');
 
 //const Database = require('./model/database');
 const userAuthRouter = require('./routers/users/auth/router.user.atuh');
+const stockRouter = require('./routers/stock/stock.router');
 
 require('dotenv').config();
 require('./config/passport')(passport);
@@ -18,6 +19,7 @@ server.use(helmet());
 server.use(cors());
 
 server.use('/api/users/auth',userAuthRouter);
+server.use('/api/stock',stockRouter);
 
 server.listen(process.env.PORT || 7170 , ()=>{
     console.log(`server is running on port ${process.env.PORT || 7170}`);

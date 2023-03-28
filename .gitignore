@@ -2,3 +2,4 @@ backend/node_modules
 backend/.env
 backend/id_rsa_priv.pem
 backend/id_rsa_pub.pem
+backend/db_list.csv

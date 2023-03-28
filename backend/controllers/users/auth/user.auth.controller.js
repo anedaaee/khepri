@@ -12,8 +12,8 @@ class UserController{
             .then((result) => {
                 resolve(result);
             })
-            .catch((result) => {
-                reject(result);
+            .catch((error) => {
+                reject(error);
             });
         });
     }
@@ -29,16 +29,24 @@ class UserController{
                             ,'${this.userInformation.signupDate}');`;
             query(queryText)
             .then((result) => {
-                result.metadata.message = `user ${this.userInformation.email} successfuly signed up.`;
-                res.status(202).send(JSON.stringify(result));
+                //result.metadata.message = `user ${this.userInformation.email} successfuly signed up.`;
+                let returnObj = {
+                    metadata:{
+                        situation:true,
+                        message:`user ${this.userInformation.email} successfuly signed up.`,
+                    },
+                    data : this.userInformation
+                };
+                res.status(202).send(JSON.stringify(returnObj));
             })
-            .catch ( (result) => {
-                res.status(500).send(JSON.stringify(result));
+            .catch ( (error) => {
+                res.status(500).send(JSON.stringify(error));
             });
         })
-        .catch( (result) => {
-            result.metadata.message = `we already have email: ${this.userInformation.email} in our database`;
-            res.status(406).send(JSON.stringify(result));
+        .catch( (error) => {
+            error.metadata.message = `we already have email: ${this.userInformation.email} in our database`;
+            error.metadata.error = error;
+            res.status(406).send(JSON.stringify(error));
         });
         
     }
@@ -61,35 +69,47 @@ class UserController{
                 let user = result.data[0];
                 let passwordValidation = utils.validPassword(this.userInformation.password , user.hash , user.salt);
                 if(passwordValidation){
-                    let id = uuidv4();
-                    const jwt = utils.issueJWT(user,id);
-                    utils.saveToken(user,jwt.token,id)
-                    .then((result)=>{
-                        let returnObj = {
-                            metadata:{
-                                situation:true,
-                                message:`successfully loged in. `
-                            },
-                            data : {
-                                success : true,
-                                user : user ,
-                                token : jwt.token ,
-                                exiresIn : jwt.exiresIn
-                            }
-                        };
-                        res.status(202).send(JSON.stringify(returnObj));
-                    })
-                    .catch((result)=>{
-                        let returnObj = {
-                            metadata:{
-                                situation:false,
-                                message:`error accured when saving token data. `
-                            },
-                            data : {}
-                        };
-                        console.log(JSON.stringify(result));
-                        res.status(500).send(JSON.stringify(returnObj));
-                    });
+                    //let id = uuidv4();
+                    const jwt = utils.issueJWT(user);
+                    let returnObj = {
+                        metadata:{
+                            situation:true,
+                            message:`successfully loged in. `
+                        },
+                        data : {
+                            user : user ,
+                            token : jwt.token ,
+                            exiresIn : jwt.exiresIn
+                        }
+                    };
+                    res.status(201).send(JSON.stringify(returnObj));
+                    //utils.saveToken(user,jwt.token,id)
+                    // .then((result)=>{
+                        // let returnObj = {
+                        //     metadata:{
+                        //         situation:true,
+                        //         message:`successfully loged in. `
+                        //     },
+                        //     data : {
+                        //         success : true,
+                        //         user : user ,
+                        //         token : jwt.token ,
+                        //         exiresIn : jwt.exiresIn
+                        //     }
+                        // };
+                        // res.status(202).send(JSON.stringify(returnObj));
+                    // })
+                    // .catch((result)=>{
+                    //     let returnObj = {
+                    //         metadata:{
+                    //             situation:false,
+                    //             message:`error accured when saving token data. `
+                    //         },
+                    //         data : {}
+                    //     };
+                    //     console.log(JSON.stringify(result));
+                    //     res.status(500).send(JSON.stringify(returnObj));
+                    // });
                 }else{
                     let returnObj = {
                         metadata:{
@@ -106,6 +126,7 @@ class UserController{
             res.status(500).send(JSON.stringify(result));
         });
     }
+
 }
 
 module.exports = UserController;
