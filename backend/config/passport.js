@@ -15,32 +15,43 @@ const options = {
 };
 
 const strategy = new JwtStrategy(options,(payload , done) => {
-    console.log(payload);
-    let queryText = `SELECT * FROM user_tokens WHERE id = '${payload.sub.id}'`;
-    query(queryText)
-    .then( (result) => {
-        if(result.data.lengh === 0){
-            done(null,false);
+    try{
+        let today = Date.now() / 1000;
+        if( today > payload.exp){
+            done(null,false,{message : 'token expired'});
         }else{
-            
-            let today = Date.now() / 1000;
-            console.log(payload.exp);
-            console.log(today);
-            if( today > payload.exp){
-                done(null,false,{message : 'token expired'});
-            }else{
-                done(null,result.data[0]);
-            }
-            // console.log(result.data[0].login_time + " "+today);
-            //console.log(JSON.stringify(result.data[0]));
+            done(null,payload.sub.user);
         }
-    })
-    .catch( (result) => {
-        done(result,null);
-    });
+    }catch(error){
+        done(error,false);
+    }
+    // console.log('hi');
+    // let queryText = `SELECT * FROM user_tokens WHERE id = '${payload.sub.id}'`;
+    // query(queryText)
+    // .then( (result) => {
+    //     if(result.data.lengh === 0){
+    //         done(null,false);
+    //     }else{
+    //         console.log(result.data[0].login_status);
+    //         if(result.data[0].login_status === 1){
+    //             let today = Date.now() / 1000;
+    //             console.log(today);
+    //             console.log(payload.exp);
+    //             if( today > payload.exp){
+    //                 done(null,false,{message : 'token expired'});
+    //             }else{
+    //                 done(null,result.data[0]);
+    //             }
+    //         }else{
+    //             done(null,false,{message : 'already loged out'});
+    //         }
+    //     }
+    // })
+    // .catch( (result) => {
+    //     done(result,null);
+    // });
 });
 
 module.exports = (passport) => {
-    //console.log(JSON.stringify(passport));
     passport.use(strategy);
 }
