@@ -7,7 +7,7 @@ class UserController{
 
     checkUserName = (email) => {
         return new Promise((resolve , reject) => {
-            let queryText = `SELECT COUNT(email) FROM users WHERE email='${email}';`;
+            let queryText = `SELECT COUNT(email) as userCount FROM users WHERE email='${email}';`;
             query(queryText)
             .then((result) => {
                 resolve(result);
@@ -17,19 +17,26 @@ class UserController{
             });
         });
     }
-
-    signup = (req,res,next) => {
-        this.userInformation = req.body;
-        this.checkUserName(this.userInformation.email)
-        .then( (result) => {
-            const saltHash = utils.genPassword(this.userInformation.password);
+    signup = async (req,res,next) => {
+        try{
+            this.userInformation = req.body;
             
-            let queryText = `INSERT INTO users VALUE('${this.userInformation.email}'\
-                            ,'${saltHash.hash}','${saltHash.salt}','${this.userInformation.fullName}'\
-                            ,'${this.userInformation.signupDate}');`;
-            query(queryText)
-            .then((result) => {
-                //result.metadata.message = `user ${this.userInformation.email} successfuly signed up.`;
+            let checkUsernameResult = await this.checkUserName(this.userInformation.email);
+            
+            const signupDate = new Date().getTime()
+
+            console.log(signupDate);
+            if(checkUsernameResult[0].userCount === 0 ){
+
+                const saltHash = utils.genPassword(this.userInformation.password);
+                
+                let queryText = `INSERT INTO users VALUE('${this.userInformation.email}'\
+                ,'${saltHash.hash}','${saltHash.salt}','${this.userInformation.fullName}'\
+                ,'${signupDate}');`;
+
+
+                await query(queryText);
+                
                 let returnObj = {
                     metadata:{
                         situation:true,
@@ -37,19 +44,28 @@ class UserController{
                     },
                     data : this.userInformation
                 };
+                
                 res.status(202).send(JSON.stringify(returnObj));
-            })
-            .catch ( (error) => {
-                res.status(500).send(JSON.stringify(error));
-            });
-        })
-        .catch( (error) => {
-            error.metadata.message = `we already have email: ${this.userInformation.email} in our database`;
-            error.metadata.error = error;
-            res.status(406).send(JSON.stringify(error));
-        });
-        
+                
+            }else{
+                const error = new Error('user already exist');
+                error.reason = 'user already exist in our database.';
+                error.code = 100;
+                throw error;
+            }
+
+        }catch(error){
+            let returnObj = {
+                metadata:{
+                    situation:false,
+                    message:`error happend`,
+                    error: error
+                },
+            };
+            res.status(400).send(returnObj);
+        }
     }
+
 
     login = (req,res,next) => {
         this.userInformation = req.body;

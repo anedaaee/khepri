@@ -17,37 +17,14 @@ let  query = (query) => {
             {
             connection.query(query,(error,result,fields) => {
                 if(error){
-                    let returnObj = {
-                        metadata:{
-                            situation:false,
-                            message:`Database performed query.`,
-                            error:error
-                        },
-                        data : {}
-                    };
-                    reject(returnObj);
+                    reject(error);
                 }else{
-                    let returnObj = {
-                        metadata:{
-                            situation:true,
-                            message:`Query successfuly performed`,
-                        },
-                        data : result
-                    };
-                    resolve(returnObj);
+                    resolve(result);
                 }
             });
         }
         }catch(error){
-           let returnObj = {
-                metadata:{
-                    situation:false,
-                    message:`Database connection failed.`,
-                    error:error
-                },
-                data : {}
-            };
-            reject (returnObj); 
+            reject (error); 
         }
 
     });
